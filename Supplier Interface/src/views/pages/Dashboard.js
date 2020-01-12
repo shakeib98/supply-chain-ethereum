@@ -222,16 +222,16 @@ resolve(res)
 
 if(accounts[0].toLowerCase()==this.state.supC_PK.toString().toLowerCase()){
   this.setState({validSupplier:true});
-  this.setState({orgName:"Egg"});
+  this.setState({name:"Egg"});
 
 }
 if(accounts[0].toLowerCase()==this.state.supA_PK.toString().toLowerCase()){
   this.setState({validSupplier:true});
-  this.setState({orgName:"Yeast"});
+  this.setState({name:"Yeast"});
 }
 if(accounts[0].toLowerCase()==this.state.supB_PK.toString().toLowerCase()){
     this.setState({validSupplier:true});
-    this.setState({orgName:"Flour"});
+    this.setState({name:"Flour"});
 }
 
 
@@ -363,17 +363,22 @@ if(accounts[0].toLowerCase()==this.state.supB_PK.toString().toLowerCase()){
 
   async  createCertFun(e) {
     
-    const { orgName, certName, date, pubKey, certList, isKey, serialID } = this.state
-    console.log('create---->',orgName, certName, date, pubKey, certList, isKey, serialID)
+    // const { orgName, certName, date, pubKey, certList, isKey, serialID } = this.state
+    // console.log('create---->',orgName, certName, date, pubKey, certList, isKey, serialID)
+     const { name,date,addressOfManufacturer,quantity } = this.state
+    console.log('create---->',name,date,addressOfManufacturer,quantity)
+   
     // this.supplierCerts_A()
 
-    if (orgName !== '' && orgName !== undefined &&
-      certName !== '' && certName !== undefined && date !== ''
-      && date !== undefined && pubKey !== ''
-      && pubKey !== undefined  &&
-      certList !== '' && certList !== undefined
-      && serialID !== '' && serialID !== undefined) {
-
+    if (name !== '' && name !== undefined &&
+      //certName !== '' && certName !== undefined && 
+      date !== '' && date !== undefined &&
+      addressOfManufacturer !== '' && addressOfManufacturer !== undefined &&
+      quantity !== '' && quantity !== undefined)
+     // && pubKey !== '' && pubKey !== undefined  
+     // &&certList !== '' && certList !== undefined
+     // && serialID !== '' && serialID !== undefined) 
+     {
       var web3;
       let ethereum = window.ethereum;
       console.log('ethereum', window.ethereum)
@@ -394,25 +399,28 @@ if(accounts[0].toLowerCase()==this.state.supB_PK.toString().toLowerCase()){
       if(accounts[0].toLowerCase()==this.state.supA_PK.toString().toLowerCase()){
         this.toggle1()
       try {
-
 // (name,date,quantity,addressOfManufacturer);
-
+const name = this.state.name;
+const date = this.state.date;
+const quantity = this.state.quantity;
+const addressOfManufacturer = this.state.addressOfManufacturer;
         var that = this
         await MyContract.methods.
-        issueIngredient(this.name,this.date.toString(), this.quantity, this.addressOfManufacturer).send({
+        issueIngredient(name,date.toString(),quantity, addressOfManufacturer).send({
             from: accounts[0]
           }).on('transactionHash', (hash) => {
             console.log(hash)
+            console.log("issue ingredient main pehla dot on");
             that.setState({ transactionHash: 'https://rinkeby.etherscan.io/tx/' + hash })
           }).on('confirmation', function (confirmationNumber,receipt) {
+            console.log("issue ingredient main dosra dot on");
             if(confirmationNumber === 1){
+              console.log("issue ingredient main dosra dot on main if");
               console.log("Transaction confirmed");
               console.log(receipt)
               alert('Transaction has been confirmed.')
               that.toggle1()
             }
-            
-
           });
       }
       catch (e) {
@@ -422,7 +430,7 @@ if(accounts[0].toLowerCase()==this.state.supB_PK.toString().toLowerCase()){
 
       }
       finally{
-        // this.toggle1()
+        this.toggle1()
       }
 
        }
@@ -438,13 +446,18 @@ if(accounts[0].toLowerCase()==this.state.supB_PK.toString().toLowerCase()){
       var that = this
       const accounts = await web3.eth.getAccounts();
       await MyContract.methods.
-        createCertificateForManufacturer(accounts[0], orgName, certName, serialID.toString(), date.toString(), (certList).toString()).send({
+      issueIngredient(this.state.name,this.state.date.toString(),this.state.quantity, this.state.addressOfManufacturer).send({
           from: accounts[0]
         }).on('transactionHash', (hash) => {
           console.log(hash)
+          
           that.setState({ transactionHash: 'https://rinkeby.etherscan.io/tx/' + hash })
         }).on('confirmation', function (confirmationNumber,receipt) {
+          
+         
           if(confirmationNumber === 1){
+            
+       
             console.log("Transaction confirmed");
             console.log(receipt)
             alert('Transaction has been confirmed.')
@@ -473,7 +486,7 @@ if(accounts[0].toLowerCase()==this.state.supB_PK.toString().toLowerCase()){
       var that = this
       const accounts = await web3.eth.getAccounts();
       await MyContract.methods.
-        createCertificateForManufacturer(accounts[0], orgName, certName, serialID.toString(), date.toString(), (certList).toString()).send({
+      issueIngredient(this.state.name,this.state.date.toString(),this.state.quantity, this.state.addressOfManufacturer).send({
           from: accounts[0]
         }).on('transactionHash', (hash) => {
           console.log(hash)
@@ -503,6 +516,7 @@ if(accounts[0].toLowerCase()==this.state.supB_PK.toString().toLowerCase()){
     }
     else {
       alert('Please fill all fields properly')
+      // console.log(this.state.name,this.state.date,this.state.quantity,this.state.addressOfManufacturer)
     }
 
   }
@@ -618,7 +632,7 @@ if(accounts[0].toLowerCase()==this.state.supB_PK.toString().toLowerCase()){
                         type="text"
                         id="defaultFormCardNameEx"
                         className="form-control"
-                        value={this.state.orgName}
+                        value={this.state.name}
                        // onChange={(e) => { this.setState({ orgName: e.target.value }) }}
                       />
                       <br />
@@ -627,8 +641,8 @@ if(accounts[0].toLowerCase()==this.state.supB_PK.toString().toLowerCase()){
                         htmlFor="defaultFormCardNameEx"
                         className="grey-text font-weight-light"
                       >
-                        Quantity
-                </label> (gram)
+                        Quantity  <sub>gram</sub>
+                </label> 
                       <input
                         type="text"
                         id="defaultFormCardNameEx"
@@ -649,7 +663,7 @@ if(accounts[0].toLowerCase()==this.state.supB_PK.toString().toLowerCase()){
                         type="text"
                         id="defaultFormCardEmailEx"
                         className="form-control"
-                        value={this.state.serialID}
+                       // value={this.state.serialID}
                         value={this.state.addressOfManufacturer}
                         />
 
